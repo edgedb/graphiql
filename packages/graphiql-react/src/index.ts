@@ -17,6 +17,8 @@ export {
   useResponseEditor,
   useVariableEditor,
   VariableEditor,
+  useGlobalsEditor,
+  GlobalsEditor,
 } from './editor';
 export {
   ExecutionContext,
@@ -82,6 +84,7 @@ export type {
   UseQueryEditorArgs,
   UseResponseEditorArgs,
   UseVariableEditorArgs,
+  UseGlobalsEditorArgs,
   WriteableEditorProps,
 } from './editor';
 export type {

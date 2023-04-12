@@ -87,6 +87,7 @@ export function ExecutionContextProvider({
     queryEditor,
     responseEditor,
     variableEditor,
+    globalsEditor,
     updateActiveTabValues,
   } = useEditorContext({ nonNull: true, caller: ExecutionContextProvider });
   const history = useHistoryContext();
@@ -141,6 +142,19 @@ export function ExecutionContextProvider({
       return;
     }
 
+    const globalsString = globalsEditor?.getValue();
+    let globals: Record<string, unknown> | undefined;
+    try {
+      globals = tryParseJsonObject({
+        json: globalsString,
+        errorMessageParse: 'Globals are invalid JSON',
+        errorMessageType: 'Globals are not a JSON object.',
+      });
+    } catch (error) {
+      setResponse(error instanceof Error ? error.message : `${error}`);
+      return;
+    }
+
     const headersString = headerEditor?.getValue();
     let headers: Record<string, unknown> | undefined;
     try {
@@ -179,6 +193,7 @@ export function ExecutionContextProvider({
       query,
       variables: variablesString,
       headers: headersString,
+      globals: globalsString,
       operationName: opName,
     });
 
@@ -251,6 +266,7 @@ export function ExecutionContextProvider({
         {
           query,
           variables,
+          globals,
           operationName: opName,
         },
         {
@@ -312,6 +328,7 @@ export function ExecutionContextProvider({
     subscription,
     updateActiveTabValues,
     variableEditor,
+    globalsEditor,
   ]);
 
   const isSubscribed = Boolean(subscription);

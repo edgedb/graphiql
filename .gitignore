@@ -25,6 +25,7 @@ lerna-debug.log
 
 .yarnrc
 yarn-1.18.0.js
+.yarn
 *.orig
 .idea/
 

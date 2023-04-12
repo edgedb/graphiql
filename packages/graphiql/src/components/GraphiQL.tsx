@@ -52,6 +52,7 @@ import {
   useTheme,
   UseVariableEditorArgs,
   VariableEditor,
+  GlobalsEditor,
   WriteableEditorProps,
 } from '@graphiql/react';
 
@@ -265,7 +266,7 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
   });
 
   const [activeSecondaryEditor, setActiveSecondaryEditor] = useState<
-    'variables' | 'headers'
+    'variables' | 'headers' | 'globals'
   >(() => {
     if (
       props.defaultEditorToolsVisibility === 'variables' ||
@@ -556,6 +557,23 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
                             Headers
                           </UnStyledButton>
                         ) : null}
+                        <UnStyledButton
+                          type="button"
+                          className={
+                            activeSecondaryEditor === 'globals' &&
+                            editorToolsResize.hiddenElement !== 'second'
+                              ? 'active'
+                              : ''
+                          }
+                          onClick={() => {
+                            if (editorToolsResize.hiddenElement === 'second') {
+                              editorToolsResize.setHiddenElement(null);
+                            }
+                            setActiveSecondaryEditor('globals');
+                          }}
+                        >
+                          Globals
+                        </UnStyledButton>
                       </div>
                       <Tooltip
                         label={
@@ -620,7 +638,24 @@ export function GraphiQLInterface(props: GraphiQLInterfaceProps) {
                           readOnly={props.readOnly}
                         />
                       )}
+                      <GlobalsEditor
+                        editorTheme={props.editorTheme}
+                        isHidden={activeSecondaryEditor !== 'globals'}
+                        keyMap={props.keyMap}
+                        // onEdit={props.onEditVariables}
+                        // onClickReference={onClickReference}
+                        readOnly={props.readOnly}
+                      />
                     </section>
+                    {activeSecondaryEditor === 'globals' ? (
+                      <div className="graphiql-globals-editor-note">
+                        Note: Globals are an EdgeDB extension to the graphql
+                        protocol. For more details see the docs:{' '}
+                        <a href="https://www.edgedb.com/docs/clients/graphql">
+                          edgedb.com/docs/clients/graphql
+                        </a>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>

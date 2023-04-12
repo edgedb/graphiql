@@ -14,6 +14,7 @@ export type HistoryContextType = {
     query?: string;
     variables?: string;
     headers?: string;
+    globals?: string;
     operationName?: string;
   }): void;
   /**
@@ -27,6 +28,7 @@ export type HistoryContextType = {
     query?: string;
     variables?: string;
     headers?: string;
+    globals?: string;
     operationName?: string;
     label?: string;
     favorite?: boolean;
@@ -46,6 +48,7 @@ export type HistoryContextType = {
     query?: string;
     variables?: string;
     headers?: string;
+    globals?: string;
     operationName?: string;
     label?: string;
     favorite?: boolean;
@@ -76,11 +79,12 @@ export function HistoryContextProvider(props: HistoryContextProviderProps) {
   const [items, setItems] = useState(historyStore.current?.queries || []);
 
   const addToHistory: HistoryContextType['addToHistory'] = useCallback(
-    ({ query, variables, headers, operationName }) => {
+    ({ query, variables, headers, globals, operationName }) => {
       historyStore.current?.updateHistory(
         query,
         variables,
         headers,
+        globals,
         operationName,
       );
       setItems(historyStore.current.queries);
@@ -89,11 +93,20 @@ export function HistoryContextProvider(props: HistoryContextProviderProps) {
   );
 
   const editLabel: HistoryContextType['editLabel'] = useCallback(
-    ({ query, variables, headers, operationName, label, favorite }) => {
+    ({
+      query,
+      variables,
+      headers,
+      globals,
+      operationName,
+      label,
+      favorite,
+    }) => {
       historyStore.current.editLabel(
         query,
         variables,
         headers,
+        globals,
         operationName,
         label,
         favorite,
@@ -104,11 +117,20 @@ export function HistoryContextProvider(props: HistoryContextProviderProps) {
   );
 
   const toggleFavorite: HistoryContextType['toggleFavorite'] = useCallback(
-    ({ query, variables, headers, operationName, label, favorite }) => {
+    ({
+      query,
+      variables,
+      headers,
+      globals,
+      operationName,
+      label,
+      favorite,
+    }) => {
       historyStore.current.toggleFavorite(
         query,
         variables,
         headers,
+        globals,
         operationName,
         label,
         favorite,

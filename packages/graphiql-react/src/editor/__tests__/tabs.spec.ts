@@ -110,6 +110,7 @@ describe('getDefaultTabState', () => {
         headers: null,
         query: null,
         variables: null,
+        globals: null,
         storage: null,
       }),
     ).toEqual({
@@ -133,15 +134,18 @@ describe('getDefaultTabState', () => {
             headers: null,
             query: 'query Person { person { name } }',
             variables: '{"id":"foo"}',
+            globals: null,
           },
           {
             headers: '{"x-header":"foo"}',
             query: 'query Image { image }',
             variables: null,
+            globals: null,
           },
         ],
         query: null,
         variables: null,
+        globals: null,
         storage: null,
       }),
     ).toEqual({

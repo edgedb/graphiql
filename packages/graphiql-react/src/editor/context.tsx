@@ -37,6 +37,7 @@ import {
 } from './tabs';
 import { CodeMirrorEditor } from './types';
 import { STORAGE_KEY as STORAGE_KEY_VARIABLES } from './variable-editor';
+import { STORAGE_KEY as STORAGE_KEY_GLOBALS } from './globals-editor';
 
 export type CodeMirrorEditorWithOperationFacts = CodeMirrorEditor & {
   documentAST: DocumentNode | null;
@@ -92,6 +93,10 @@ export type EditorContextType = TabsState & {
    */
   variableEditor: CodeMirrorEditor | null;
   /**
+   * The CodeMirror editor instance for the globals editor.
+   */
+  globalsEditor: CodeMirrorEditor | null;
+  /**
    * Set the CodeMirror editor instance for the headers editor.
    */
   setHeaderEditor(newEditor: CodeMirrorEditor): void;
@@ -107,6 +112,10 @@ export type EditorContextType = TabsState & {
    * Set the CodeMirror editor instance for the variables editor.
    */
   setVariableEditor(newEditor: CodeMirrorEditor): void;
+  /**
+   * Set the CodeMirror editor instance for the variables editor.
+   */
+  setGlobalsEditor(newEditor: CodeMirrorEditor): void;
 
   /**
    * Changes the operation name and invokes the `onEditOperationName` callback.
@@ -133,6 +142,11 @@ export type EditorContextType = TabsState & {
    * component.
    */
   initialVariables: string;
+  /**
+   * The contents of the globals editor when initially rendering the provider
+   * component.
+   */
+  initialGlobals: string;
 
   /**
    * A map of fragment definitions using the fragment name as key which are
@@ -253,6 +267,13 @@ export type EditorContextProviderProps = {
    * typing in the editor.
    */
   variables?: string;
+  /**
+   * This prop can be used to set the contents of the globals editor. Every
+   * time this prop changes, the contents of the globals editor are replaced.
+   * Note that the editor contents can be changed in between these updates by
+   * typing in the editor.
+   */
+  globals?: string;
 
   /**
    * Headers to be set when opening a new tab
@@ -273,6 +294,9 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
   const [variableEditor, setVariableEditor] = useState<CodeMirrorEditor | null>(
     null,
   );
+  const [globalsEditor, setGlobalsEditor] = useState<CodeMirrorEditor | null>(
+    null,
+  );
 
   const [shouldPersistHeaders, setShouldPersistHeadersInternal] = useState(
     () => {
@@ -287,6 +311,7 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
   useSynchronizeValue(queryEditor, props.query);
   useSynchronizeValue(responseEditor, props.response);
   useSynchronizeValue(variableEditor, props.variables);
+  useSynchronizeValue(globalsEditor, props.globals);
 
   const storeTabs = useStoreTabs({
     storage,
@@ -300,12 +325,14 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
     const variables =
       props.variables ?? storage?.get(STORAGE_KEY_VARIABLES) ?? null;
     const headers = props.headers ?? storage?.get(STORAGE_KEY_HEADERS) ?? null;
+    const globals = props.globals ?? storage?.get(STORAGE_KEY_GLOBALS) ?? null;
     const response = props.response ?? '';
 
     const tabState = getDefaultTabState({
       query,
       variables,
       headers,
+      globals,
       defaultTabs: props.defaultTabs || props.initialTabs,
       defaultQuery: props.defaultQuery || DEFAULT_QUERY,
       defaultHeaders: props.defaultHeaders,
@@ -320,6 +347,7 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
         '',
       variables: variables ?? '',
       headers: headers ?? props.defaultHeaders ?? '',
+      globals: globals ?? '',
       response,
       tabState,
     };
@@ -356,12 +384,14 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
     queryEditor,
     variableEditor,
     headerEditor,
+    globalsEditor,
     responseEditor,
   });
   const setEditorValues = useSetEditorValues({
     queryEditor,
     variableEditor,
     headerEditor,
+    globalsEditor,
     responseEditor,
   });
   const { onTabChange, defaultHeaders, children } = props;
@@ -484,16 +514,19 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
       queryEditor,
       responseEditor,
       variableEditor,
+      globalsEditor,
       setHeaderEditor,
       setQueryEditor,
       setResponseEditor,
       setVariableEditor,
+      setGlobalsEditor,
 
       setOperationName,
 
       initialQuery: initialState.query,
       initialVariables: initialState.variables,
       initialHeaders: initialState.headers,
+      initialGlobals: initialState.globals,
       initialResponse: initialState.response,
 
       externalFragments,
@@ -513,6 +546,7 @@ export function EditorContextProvider(props: EditorContextProviderProps) {
       queryEditor,
       responseEditor,
       variableEditor,
+      globalsEditor,
 
       setOperationName,
 

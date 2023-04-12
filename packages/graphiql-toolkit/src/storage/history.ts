@@ -26,6 +26,7 @@ export class HistoryStore {
     query?: string,
     variables?: string,
     headers?: string,
+    globals?: string,
     lastQuerySaved?: QueryStoreItem,
   ) {
     if (!query) {
@@ -52,7 +53,14 @@ export class HistoryStore {
         if (
           JSON.stringify(headers) === JSON.stringify(lastQuerySaved.headers)
         ) {
-          return false;
+          if (
+            JSON.stringify(globals) === JSON.stringify(lastQuerySaved.globals)
+          ) {
+            return false;
+          }
+          if (globals && !lastQuerySaved.globals) {
+            return false;
+          }
         }
         if (headers && !lastQuerySaved.headers) {
           return false;
@@ -69,6 +77,7 @@ export class HistoryStore {
     query?: string,
     variables?: string,
     headers?: string,
+    globals?: string,
     operationName?: string,
   ) => {
     if (
@@ -76,6 +85,7 @@ export class HistoryStore {
         query,
         variables,
         headers,
+        globals,
         this.history.fetchRecent(),
       )
     ) {
@@ -83,6 +93,7 @@ export class HistoryStore {
         query,
         variables,
         headers,
+        globals,
         operationName,
       });
       const historyQueries = this.history.items;
@@ -95,6 +106,7 @@ export class HistoryStore {
     query?: string,
     variables?: string,
     headers?: string,
+    globals?: string,
     operationName?: string,
     label?: string,
     favorite?: boolean,
@@ -103,6 +115,7 @@ export class HistoryStore {
       query,
       variables,
       headers,
+      globals,
       operationName,
       label,
     };
@@ -120,6 +133,7 @@ export class HistoryStore {
     query?: string,
     variables?: string,
     headers?: string,
+    globals?: string,
     operationName?: string,
     label?: string,
     favorite?: boolean,
@@ -128,6 +142,7 @@ export class HistoryStore {
       query,
       variables,
       headers,
+      globals,
       operationName,
       label,
     };

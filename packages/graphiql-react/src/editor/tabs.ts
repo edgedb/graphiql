@@ -18,6 +18,10 @@ export type TabDefinition = {
    * The contents of the headers editor of this tab.
    */
   headers?: string | null;
+  /**
+   * The contents of the globals editor of this tab.
+   */
+  globals?: string | null;
 };
 
 /**
@@ -71,6 +75,7 @@ export function getDefaultTabState({
   defaultTabs,
   query,
   variables,
+  globals,
   storage,
 }: {
   defaultQuery: string;
@@ -79,6 +84,7 @@ export function getDefaultTabState({
   defaultTabs?: TabDefinition[];
   query: string | null;
   variables: string | null;
+  globals: string | null;
   storage: StorageAPI | null;
 }) {
   const storedState = storage?.get(STORAGE_KEY);
@@ -97,6 +103,7 @@ export function getDefaultTabState({
           query: tab.query,
           variables: tab.variables,
           headers: tab.headers,
+          globals: tab.globals,
         });
         if (tab.hash === expectedHash) {
           matchingTabIndex = index;
@@ -114,6 +121,7 @@ export function getDefaultTabState({
           query,
           variables,
           headers,
+          globals,
           operationName,
           response: null,
         });
@@ -132,6 +140,7 @@ export function getDefaultTabState({
             query: query ?? defaultQuery,
             variables,
             headers: headers ?? defaultHeaders,
+            globals,
           },
         ]
       ).map(createTab),
@@ -162,6 +171,7 @@ function isTabState(obj: any): obj is TabState {
     hasStringOrNullKey(obj, 'query') &&
     hasStringOrNullKey(obj, 'variables') &&
     hasStringOrNullKey(obj, 'headers') &&
+    hasStringOrNullKey(obj, 'globals') &&
     hasStringOrNullKey(obj, 'operationName') &&
     hasStringOrNullKey(obj, 'response')
   );
@@ -183,11 +193,13 @@ export function useSynchronizeActiveTabValues({
   queryEditor,
   variableEditor,
   headerEditor,
+  globalsEditor,
   responseEditor,
 }: {
   queryEditor: CodeMirrorEditorWithOperationFacts | null;
   variableEditor: CodeMirrorEditor | null;
   headerEditor: CodeMirrorEditor | null;
+  globalsEditor: CodeMirrorEditor | null;
   responseEditor: CodeMirrorEditor | null;
 }) {
   return useCallback<(state: TabsState) => TabsState>(
@@ -195,17 +207,19 @@ export function useSynchronizeActiveTabValues({
       const query = queryEditor?.getValue() ?? null;
       const variables = variableEditor?.getValue() ?? null;
       const headers = headerEditor?.getValue() ?? null;
+      const globals = globalsEditor?.getValue() ?? null;
       const operationName = queryEditor?.operationName ?? null;
       const response = responseEditor?.getValue() ?? null;
       return setPropertiesInActiveTab(state, {
         query,
         variables,
         headers,
+        globals,
         response,
         operationName,
       });
     },
-    [queryEditor, variableEditor, headerEditor, responseEditor],
+    [queryEditor, variableEditor, headerEditor, globalsEditor, responseEditor],
   );
 }
 
@@ -248,11 +262,13 @@ export function useSetEditorValues({
   queryEditor,
   variableEditor,
   headerEditor,
+  globalsEditor,
   responseEditor,
 }: {
   queryEditor: CodeMirrorEditorWithOperationFacts | null;
   variableEditor: CodeMirrorEditor | null;
   headerEditor: CodeMirrorEditor | null;
+  globalsEditor: CodeMirrorEditor | null;
   responseEditor: CodeMirrorEditor | null;
 }) {
   return useCallback(
@@ -260,19 +276,22 @@ export function useSetEditorValues({
       query,
       variables,
       headers,
+      globals,
       response,
     }: {
       query: string | null;
       variables?: string | null;
       headers?: string | null;
+      globals?: string | null;
       response: string | null;
     }) => {
       queryEditor?.setValue(query ?? '');
       variableEditor?.setValue(variables ?? '');
       headerEditor?.setValue(headers ?? '');
+      globalsEditor?.setValue(globals ?? '');
       responseEditor?.setValue(response ?? '');
     },
-    [headerEditor, queryEditor, responseEditor, variableEditor],
+    [headerEditor, queryEditor, responseEditor, variableEditor, globalsEditor],
   );
 }
 
@@ -280,14 +299,16 @@ export function createTab({
   query = null,
   variables = null,
   headers = null,
+  globals = null,
 }: Partial<TabDefinition> = {}): TabState {
   return {
     id: guid(),
-    hash: hashFromTabContents({ query, variables, headers }),
+    hash: hashFromTabContents({ query, variables, headers, globals }),
     title: (query && fuzzyExtractOperationName(query)) || DEFAULT_TITLE,
     query,
     variables,
     headers,
+    globals,
     operationName: null,
     response: null,
   };
@@ -332,8 +353,14 @@ function hashFromTabContents(args: {
   query: string | null;
   variables?: string | null;
   headers?: string | null;
+  globals?: string | null;
 }): string {
-  return [args.query ?? '', args.variables ?? '', args.headers ?? ''].join('|');
+  return [
+    args.query ?? '',
+    args.variables ?? '',
+    args.headers ?? '',
+    args.globals ?? '',
+  ].join('|');
 }
 
 export function fuzzyExtractOperationName(str: string): string | null {

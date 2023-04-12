@@ -4,6 +4,7 @@ export {
   QueryEditor,
   ResponseEditor,
   VariableEditor,
+  GlobalsEditor,
 } from './components';
 export {
   EditorContext,
@@ -20,6 +21,7 @@ export {
 export { useQueryEditor } from './query-editor';
 export { useResponseEditor } from './response-editor';
 export { useVariableEditor } from './variable-editor';
+export { useGlobalsEditor } from './globals-editor';
 
 export type { EditorContextType, EditorContextProviderProps } from './context';
 export type { UseHeaderEditorArgs } from './header-editor';
@@ -30,5 +32,6 @@ export type {
 } from './response-editor';
 export type { TabsState } from './tabs';
 export type { UseVariableEditorArgs } from './variable-editor';
+export type { UseGlobalsEditorArgs } from './globals-editor';
 
 export type { CommonEditorProps, KeyMap, WriteableEditorProps } from './types';

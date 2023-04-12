@@ -4,6 +4,7 @@ export type QueryStoreItem = {
   query?: string;
   variables?: string;
   headers?: string;
+  globals?: string;
   operationName?: string;
   label?: string;
   favorite?: boolean;
@@ -30,6 +31,7 @@ export class QueryStore {
         x.query === item.query &&
         x.variables === item.variables &&
         x.headers === item.headers &&
+        x.globals === item.globals &&
         x.operationName === item.operationName,
     );
   }
@@ -40,6 +42,7 @@ export class QueryStore {
         x.query === item.query &&
         x.variables === item.variables &&
         x.headers === item.headers &&
+        x.globals === item.globals &&
         x.operationName === item.operationName,
     );
     if (itemIndex !== -1) {
@@ -54,6 +57,7 @@ export class QueryStore {
         x.query === item.query &&
         x.variables === item.variables &&
         x.headers === item.headers &&
+        x.globals === item.globals &&
         x.operationName === item.operationName,
     );
     if (itemIndex !== -1) {

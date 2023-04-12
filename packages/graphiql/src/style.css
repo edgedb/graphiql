@@ -204,6 +204,13 @@ button.graphiql-tab-add > svg {
   position: relative;
 }
 
+.graphiql-globals-editor-note {
+  font-size: 90%;
+  color: hsl(var(--color-neutral), var(--alpha-secondary));
+  padding: 6px 14px;
+  margin-top: -16px;
+}
+
 /* The response view */
 .graphiql-container .graphiql-response {
   --editor-background: transparent;

@@ -41,7 +41,7 @@ export function useChangeHandler(
   editor: CodeMirrorEditor | null,
   callback: ((value: string) => void) | undefined,
   storageKey: string | null,
-  tabProperty: 'variables' | 'headers',
+  tabProperty: 'variables' | 'headers' | 'globals',
   caller: Function,
 ) {
   const { updateActiveTabValues } = useEditorContext({ nonNull: true, caller });
@@ -212,10 +212,11 @@ type UsePrettifyEditorsArgs = {
 };
 
 export function usePrettifyEditors({ caller }: UsePrettifyEditorsArgs = {}) {
-  const { queryEditor, headerEditor, variableEditor } = useEditorContext({
-    nonNull: true,
-    caller: caller || usePrettifyEditors,
-  });
+  const { queryEditor, headerEditor, variableEditor, globalsEditor } =
+    useEditorContext({
+      nonNull: true,
+      caller: caller || usePrettifyEditors,
+    });
   return useCallback(() => {
     if (variableEditor) {
       const variableEditorContent = variableEditor.getValue();
@@ -227,6 +228,22 @@ export function usePrettifyEditors({ caller }: UsePrettifyEditorsArgs = {}) {
         );
         if (prettifiedVariableEditorContent !== variableEditorContent) {
           variableEditor.setValue(prettifiedVariableEditorContent);
+        }
+      } catch {
+        /* Parsing JSON failed, skip prettification */
+      }
+    }
+
+    if (globalsEditor) {
+      const globalsEditorContent = globalsEditor.getValue();
+      try {
+        const prettifiedGlobalsEditorContent = JSON.stringify(
+          JSON.parse(globalsEditorContent),
+          null,
+          2,
+        );
+        if (prettifiedGlobalsEditorContent !== globalsEditorContent) {
+          globalsEditor.setValue(prettifiedGlobalsEditorContent);
         }
       } catch {
         /* Parsing JSON failed, skip prettification */
